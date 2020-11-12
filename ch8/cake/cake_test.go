@@ -1,5 +1,8 @@
 package cake
 
+//go test  -bench=. -run=none gopl.io/ch8/cake
+//go test  -v -bench=. -run=none gopl.io/ch8/cake
+
 import (
 	"testing"
 	"time"
