@@ -11,6 +11,7 @@ import (
 )
 
 //go test -run=TestConcurrent -race -v gopl.io/ch9/memo
+//go test -run=TestSeq -race -v gopl.io/ch9/memo
 
 type M interface {
 	Get(key string) (interface{}, error)
@@ -67,8 +68,30 @@ func concurrent(t *testing.T, m M) {
 	n.Wait()
 }
 
+func sequential(t *testing.T, m M) {
+	//!+seq
+	for url := range incomingURLs() {
+		start := time.Now()
+		value, err := m.Get(url)
+		if err != nil {
+			log.Print(err)
+			continue
+		}
+		fmt.Printf("%s, %s, %d bytes\n",
+			url, time.Since(start), len(value.([]byte)))
+	}
+	//!-seq
+}
+
+
 func TestConcurrent(t *testing.T) {
 	m := New(httpGetBody)
 	defer m.Close()
 	concurrent(t, m)
+}
+
+func TestSeq(t *testing.T) {
+	m := New(httpGetBody)
+	defer m.Close()
+	sequential(t, m)
 }
